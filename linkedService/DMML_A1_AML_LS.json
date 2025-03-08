@@ -1,0 +1,13 @@
+{
+	"name": "DMML_A1_AML_LS",
+	"properties": {
+		"annotations": [],
+		"type": "AzureMLService",
+		"typeProperties": {
+			"subscriptionId": "9860037c-e3ac-41f5-a8e8-5d282d9693b2",
+			"resourceGroupName": "DMML_Assignment_1",
+			"mlWorkspaceName": "DMML-A1-AML",
+			"authentication": "MSI"
+		}
+	}
+}
