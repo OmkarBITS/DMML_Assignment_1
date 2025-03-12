@@ -1,0 +1,213 @@
+{
+	"name": "dmml_a1_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "IngestDataFromAPIs",
+				"description": "Ingest the Data from GitHub to ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "HttpReadSettings",
+							"requestMethod": "GET"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						},
+						"url": "https://raw.githubusercontent.com/user/repo/main/data.csv"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						},
+						"blobPath": "bronze/raw_data.csv"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DMML_A1_GitHub_Source_DS",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DMML_A1_GitHub_Target_DS",
+						"type": "DatasetReference"
+					}
+				],
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_ADLS_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Aggregation_Gold_Layer",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "DataValidation",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/2023ac05085@wilp.bits-pilani.ac.in/Data Aggregation and EDA"
+				},
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_DBX_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "TrainAndModelPrediction",
+				"type": "AzureMLExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Aggregation_Gold_Layer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"mlExecutionType": "pipeline",
+					"continueOnStepFailure": true,
+					"mlPipelineEndpointId": "22ff7832-f94f-4233-9632-cd6bc9ffcd74"
+				},
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_AML_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "DataIngestionKaggle",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [
+					{
+						"activity": "IngestDataFromAPIs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "/Users/2023ac05085@wilp.bits-pilani.ac.in/data_ingestion.py",
+					"parameters": [
+						"0"
+					]
+				},
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_DBX_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "DataValidation",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [
+					{
+						"activity": "DataCleaning",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "/Users/2023ac05085@wilp.bits-pilani.ac.in/data_validation.py",
+					"parameters": []
+				},
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_DBX_LS",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "DataCleaning",
+				"description": "Clean of the raw data ingested into the ADLS",
+				"type": "DatabricksSparkPython",
+				"dependsOn": [
+					{
+						"activity": "DataIngestionKaggle",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pythonFile": "/Users/2023ac05085@wilp.bits-pilani.ac.in/data_cleaning.py",
+					"parameters": []
+				},
+				"linkedServiceName": {
+					"referenceName": "DMML_A1_DBX_LS",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": []
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"name": "Daily Trigger",
+	"properties": {
+		"description": "Trigger for the ADF Pipeline for Daily data load from the sources",
+		"annotations": [],
+		"runtimeState": "Stopped",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "dmml_a1_pipeline",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2025-03-12T17:04:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

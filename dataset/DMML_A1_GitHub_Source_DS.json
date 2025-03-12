@@ -1,0 +1,22 @@
+{
+	"name": "DMML_A1_GitHub_Source_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DMML_A1_GitHub_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": "OmkarBITS/DMML_Assignment_1/refs/heads/main/Banking_Customer_Churn_Data_GitHub.csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
