@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "DMML-A1-ADF"
+		},
+		"DMML_A1_DBX_LS_accessToken": {
+			"value": ""
+		},
+		"DMML_A1_ADLS_LS_accountKey": {
+			"value": ""
+		},
+		"DMML_A1_DBX_LS_properties_typeProperties_existingClusterId": {
+			"value": "0301-165526-tsnb6fvu"
+		},
+		"DMML_A1_ADLS_LS_properties_typeProperties_url": {
+			"value": "https://dmmla1adls.dfs.core.windows.net/"
+		},
+		"DMML_A1_AML_LS_properties_typeProperties_subscriptionId": {
+			"value": "9860037c-e3ac-41f5-a8e8-5d282d9693b2"
+		},
+		"DMML_A1_AML_LS_properties_typeProperties_resourceGroupName": {
+			"value": "DMML_Assignment_1"
+		},
+		"DMML_A1_AML_LS_properties_typeProperties_mlWorkspaceName": {
+			"value": "DMML-A1-AML"
+		},
+		"DMML_A1_GitHub_LS_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com"
+		}
+	}
+}
